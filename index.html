@@ -1,22 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Centauri</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    html,body{height:100%;margin:0}
-    body{display:flex;align-items:center;justify-content:center;font-family:'Darker Grotesque',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;color:#111;flex-direction:column}
-    h1{font-weight:400;font-size:1.25rem;margin:0;padding:1rem;text-align:center;font-family:'Darker Grotesque',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-    .logo{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;max-height:48px;opacity:0.95}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centauri</title>
+    
+    <!-- Local favicon path -->
+    <link id="favicon" rel="icon" type="image/png" href="assets/favicon.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;500&display=swap');
+        
+        body {
+            font-family: 'Darker Grotesque', sans-serif;
+            background: #ffffff;
+            color: #111111;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
 </head>
-<body>
-  <h1>This domain will be home to Centauri</h1>
-  <!-- Logo file located at /assets/banner.png -->
-  <img class="logo" src="/assets/banner.png" alt="Centauri logo">
+<body class="min-h-screen flex flex-col items-center justify-center p-6 text-center select-none">
+
+    <div class="flex flex-col items-center w-full max-w-4xl mx-auto space-y-8">
+        
+        <div class="space-y-6">
+            <h1 class="text-4xl md:text-[3.5rem] font-normal tracking-tight leading-tight text-neutral-900">
+                Coming to Maryland.
+            </h1>
+            
+            <div id="countdown" class="flex gap-4 md:gap-6 justify-center items-center py-4 text-neutral-900 font-medium">
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="days" class="text-5xl md:text-7xl leading-none">00</span>
+                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Days</span>
+                </div>
+                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="hours" class="text-5xl md:text-7xl leading-none">00</span>
+                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Hours</span>
+                </div>
+                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="minutes" class="text-5xl md:text-7xl leading-none">00</span>
+                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Mins</span>
+                </div>
+                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="seconds" class="text-5xl md:text-7xl leading-none">00</span>
+                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Secs</span>
+                </div>
+            </div>
+
+            <p class="text-3xl md:text-[2.75rem] font-normal text-neutral-900 leading-tight">
+                Stay tuned!
+            </p>
+        </div>
+
+        <div class="pt-8 pb-4 flex items-center justify-center">
+            <!-- Local banner path -->
+            <img src="assets/banner.png" 
+                 alt="Centauri Logo" 
+                 class="h-12 md:h-16 object-contain">
+        </div>
+
+    </div>
+
+    <script>
+        // Target Date: Sept 9, 2026, 9:00 PM EST (EDT)
+        const targetDate = new Date("2026-09-09T21:00:00-04:00").getTime(); 
+
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Pad with leading zero
+            document.getElementById("days").innerText = String(days).padStart(2, '0');
+            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
+        }, 1000);
+    </script>
+
+    <script>
+        // Uses a color filter to dynamically turn the PNG favicon white in dark mode
+        const favicon = document.getElementById('favicon');
+        const originalHref = favicon.href;
+
+        function applyFaviconFilter() {
+            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (!isDarkMode) {
+                // Restore original black PNG for light mode
+                favicon.href = originalHref;
+                return;
+            }
+
+            const img = new Image();
+            // Since this will be hosted locally on GitHub, CORS shouldn't block local relative assets.
+            img.crossOrigin = "anonymous"; 
+            img.src = originalHref;
+            
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                
+                // Apply the exact color filter requested
+                ctx.filter = 'invert(100%)';
+                ctx.drawImage(img, 0, 0);
+                
+                try {
+                    // Update the favicon with the filtered output
+                    favicon.href = canvas.toDataURL('image/png');
+                } catch (e) {
+                    console.warn("Could not apply color filter. Ensure running on a web server, not file://", e);
+                }
+            };
+        }
+
+        // Listen for system theme changes and run on load
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyFaviconFilter);
+        // Add a slight delay to ensure the image is available if loading locally
+        setTimeout(applyFaviconFilter, 100);
+    </script>
 </body>
 </html>

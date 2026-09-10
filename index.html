@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centauri - Maintenance</title>
+    <title>Centauri</title>
     
     <!-- Local favicon path -->
     <link id="favicon" rel="icon" type="image/png" href="assets/favicon.png">
@@ -32,12 +32,12 @@
             
             <div class="py-4">
                 <span class="text-5xl md:text-7xl font-bold tracking-wider uppercase text-red-600">
-                    Delayed
+                    Delayed to launch before 9/11/26
                 </span>
             </div>
 
             <p class="text-3xl md:text-[2.75rem] font-normal text-neutral-900 leading-tight">
-                Stay tuned!
+               We are experiencing difficulties! 
             </p>
         </div>
 
@@ -49,46 +49,6 @@
         </div>
 
     </div>
-
-    <script>
-        // Uses a color filter to dynamically turn the PNG favicon white in dark mode
-        const favicon = document.getElementById('favicon');
-        const originalHref = favicon.href;
-
-        function applyFaviconFilter() {
-            const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (!isDarkMode) {
-                // Restore original black PNG for light mode
-                favicon.href = originalHref;
-                return;
-            }
-
-            const img = new Image();
-            img.crossOrigin = "anonymous"; 
-            img.src = originalHref;
-            
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                
-                // Apply the color filter for dark mode
-                ctx.filter = 'invert(100%)';
-                ctx.drawImage(img, 0, 0);
-                
-                try {
-                    favicon.href = canvas.toDataURL('image/png');
-                } catch (e) {
-                    console.warn("Could not apply color filter.", e);
-                }
-            };
-        }
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyFaviconFilter);
-        setTimeout(applyFaviconFilter, 100);
-    </script>
 </body>
 </html>
 

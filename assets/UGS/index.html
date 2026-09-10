@@ -2,78 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Repository Navigator</title>
+    <title>Local File Navigator</title>
     <style>
-        body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
-        .item { padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
-        .item a { text-decoration: none; color: #0366d6; }
-        .item a:hover { text-decoration: underline; }
-        .icon { margin-right: 8px; font-weight: bold; }
-        #back-btn { margin-bottom: 15px; display: inline-block; cursor: pointer; color: #0366d6; }
+        body { font-family: sans-serif; margin: 20px; background: #f4f4f9; }
+        button { padding: 10px 15px; font-size: 16px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        #tree { margin-top: 20px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        ul { list-style-type: none; padding-left: 20px; }
+        li { margin: 5px 0; }
+        .folder { font-weight: bold; color: #333; cursor: pointer; }
+        .file { color: #0066cc; cursor: pointer; }
+        .file:hover, .folder:hover { text-decoration: underline; }
+        #viewer { margin-top: 20px; padding: 15px; background: #fff; border-radius: 6px; border: 1px solid #ccc; min-height: 100px; }
     </style>
 </head>
 <body>
 
-    <h2>File Navigator</h2>
-    <div id="back-btn" style="display: none;">⬅️ Back</div>
-    <div id="explorer">Loading repository contents...</div>
+    <h1>Local File Navigator</h1>
+    <button id="openBtn">Open Folder</button>
+    
+    <div id="tree">No folder selected.</div>
+    <h3>File Preview:</h3>
+    <div id="viewer">Select a file to view its contents.</div>
 
     <script>
-        // CONFIGURATION: Change these to match your repository
-        const USERNAME = 'your-github-username';
-        const REPO = 'your-repository-name';
-        
-        let currentPath = ''; 
+        const openBtn = document.getElementById('openBtn');
+        const treeDiv = document.getElementById('tree');
+        const viewerDiv = document.getElementById('viewer');
 
-        async function fetchDirectory(path = '') {
-            const explorer = document.getElementById('explorer');
-            const backBtn = document.getElementById('back-btn');
-            explorer.innerHTML = 'Loading...';
-            
-            // Toggle the back button visibility
-            backBtn.style.display = path ? 'block' : 'none';
-            currentPath = path;
-
-            const url = `https://github.com{USERNAME}/${REPO}/contents/${path}`;
-            
+        openBtn.addEventListener('click', async () => {
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to fetch directory contents');
-                const items = await response.json();
-                
-                explorer.innerHTML = '';
-                
-                // Separate and sort folders and files
-                items.sort((a, b) => (b.type === 'dir') - (a.type === 'dir'));
-
-                items.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'item';
-                    
-                    if (item.type === 'dir') {
-                        div.innerHTML = `<span class="icon">📁</span><a href="#" onclick="fetchDirectory('${item.path}')">${item.name}</a>`;
-                    } else {
-                        // Links directly to the live GitHub Pages version of the file
-                        const fileUrl = `https://${USERNAME}.github.io/${REPO}/${item.path}`;
-                        div.innerHTML = `<span class="icon">📄</span><a href="${fileUrl}" target="_blank">${item.name}</a>`;
-                    }
-                    explorer.appendChild(div);
-                });
-            } catch (error) {
-                explorer.innerHTML = `<p style="color: red;">Error: ${error.message}. Make sure your config is correct.</p>`;
+                const dirHandle = await window.showDirectoryPicker();
+                treeDiv.innerHTML = '';
+                const ul = document.createElement('ul');
+                await buildTree(dirHandle, ul);
+                treeDiv.appendChild(ul);
+            } catch (err) {
+                console.error(err);
             }
-        }
-
-        // Handle back button functionality
-        document.getElementById('back-btn').addEventListener('click', () => {
-            const parts = currentPath.split('/');
-            parts.pop(); // Remove current folder
-            fetchDirectory(parts.join('/'));
         });
 
-        // Initial load
-        fetchDirectory();
+        async function buildTree(dirHandle, parentElement) {
+            for await (const entry of dirHandle.values()) {
+                const li = document.createElement('li');
+                
+                if (entry.kind === 'directory') {
+                    li.textContent = `📁 ${entry.name}`;
+                    li.className = 'folder';
+                    const subUl = document.createElement('ul');
+                    subUl.style.display = 'none'; // Collapse by default
+                    
+                    li.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        if (subUl.childElementCount === 0) {
+                            await buildTree(entry, subUl);
+                        }
+                        subUl.style.display = subUl.style.display === 'none' ? 'block' : 'none';
+                    });
+                    
+                    li.appendChild(subUl);
+                } else if (entry.kind === 'file') {
+                    li.textContent = `📄 ${entry.name}`;
+                    li.className = 'file';
+                    
+                    li.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const file = await entry.getFile();
+                        const text = await file.text();
+                        viewerDiv.textContent = text;
+                    });
+                }
+                
+                parentElement.appendChild(li);
+            }
+        }
     </script>
 </body>
 </html>

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centauri</title>
+    <title>Centauri - Maintenance</title>
     
     <!-- Local favicon path -->
     <link id="favicon" rel="icon" type="image/png" href="assets/favicon.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;500;700&display=swap');
         
         body {
             font-family: 'Darker Grotesque', sans-serif;
@@ -30,26 +30,10 @@
                 Coming to Maryland.
             </h1>
             
-            <div id="countdown" class="flex gap-4 md:gap-6 justify-center items-center py-4 text-neutral-900 font-medium">
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="days" class="text-5xl md:text-7xl leading-none">00</span>
-                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Days</span>
-                </div>
-                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="hours" class="text-5xl md:text-7xl leading-none">00</span>
-                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Hours</span>
-                </div>
-                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="minutes" class="text-5xl md:text-7xl leading-none">00</span>
-                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Mins</span>
-                </div>
-                <span class="text-4xl md:text-6xl font-light pb-6 md:pb-8 text-neutral-300">:</span>
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="seconds" class="text-5xl md:text-7xl leading-none">00</span>
-                    <span class="text-xs md:text-sm uppercase tracking-[0.2em] mt-2 text-neutral-500 font-bold">Secs</span>
-                </div>
+            <div class="py-4">
+                <span class="text-5xl md:text-7xl font-bold tracking-wider uppercase text-red-600">
+                    Delayed
+                </span>
             </div>
 
             <p class="text-3xl md:text-[2.75rem] font-normal text-neutral-900 leading-tight">
@@ -67,36 +51,6 @@
     </div>
 
     <script>
-        // Target Date: Sept 9, 2026, 9:00 PM EST (EDT)
-        const targetDate = new Date("2026-09-09T21:00:00-04:00").getTime(); 
-
-        const timer = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-
-            if (distance < 0) {
-                clearInterval(timer);
-                document.getElementById("days").innerText = "00";
-                document.getElementById("hours").innerText = "00";
-                document.getElementById("minutes").innerText = "00";
-                document.getElementById("seconds").innerText = "00";
-                return;
-            }
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Pad with leading zero
-            document.getElementById("days").innerText = String(days).padStart(2, '0');
-            document.getElementById("hours").innerText = String(hours).padStart(2, '0');
-            document.getElementById("minutes").innerText = String(minutes).padStart(2, '0');
-            document.getElementById("seconds").innerText = String(seconds).padStart(2, '0');
-        }, 1000);
-    </script>
-
-    <script>
         // Uses a color filter to dynamically turn the PNG favicon white in dark mode
         const favicon = document.getElementById('favicon');
         const originalHref = favicon.href;
@@ -111,7 +65,6 @@
             }
 
             const img = new Image();
-            // Since this will be hosted locally on GitHub, CORS shouldn't block local relative assets.
             img.crossOrigin = "anonymous"; 
             img.src = originalHref;
             
@@ -121,23 +74,21 @@
                 canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
                 
-                // Apply the exact color filter requested
+                // Apply the color filter for dark mode
                 ctx.filter = 'invert(100%)';
                 ctx.drawImage(img, 0, 0);
                 
                 try {
-                    // Update the favicon with the filtered output
                     favicon.href = canvas.toDataURL('image/png');
                 } catch (e) {
-                    console.warn("Could not apply color filter. Ensure running on a web server, not file://", e);
+                    console.warn("Could not apply color filter.", e);
                 }
             };
         }
 
-        // Listen for system theme changes and run on load
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyFaviconFilter);
-        // Add a slight delay to ensure the image is available if loading locally
         setTimeout(applyFaviconFilter, 100);
     </script>
 </body>
 </html>
+
